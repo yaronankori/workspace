@@ -1,0 +1,89 @@
+/**
+  ******************************************************************************
+  * @file    main.c
+  * @author  Ac6
+  * @version V1.0
+  * @date    01-December-2013
+  * @brief   Default main function.
+  ******************************************************************************
+*/
+
+
+#include "stdio.h"
+#include "stdint.h"
+
+#include "stm32f4xx.h"
+#include "FreeRTOS.h"
+#include "task.h"
+			
+void vTask1_handler(void *param );
+void vTask2_handler(void *param );
+
+TaskHandle_t xTaskHandle1 = NULL;
+TaskHandle_t xTaskHandle2 = NULL;
+
+extern void initialise_monitor_handles();
+static void prvSetupHardware(void);
+
+int main(void)
+{
+
+#ifdef USE_SEMIHOSTING
+	initialise_monitor_handles();
+	printf("This is hello world example code\n");
+#endif
+
+	prvSetupHardware();
+
+
+	//1) HSI ON, PLL OFF, HSE OFF, System clock = 16MHz, CPU clock 16MHz
+	RCC_DeInit();
+
+	//2) Update the system clock variable(to 16MHz)
+	SystemCoreClockUpdate();
+
+    //3) Create 2 tasks
+	 xTaskCreate(vTask1_handler,//Task function
+			 	 "Task-1",      //Task name
+				 configMINIMAL_STACK_SIZE, //Task stack size
+				 NULL,          // Task function argument to transfer
+				 2,             // Priority
+				 &xTaskHandle1);// Tasks handle
+
+	 xTaskCreate(vTask2_handler,//Task function
+			 	 "Task-2",//Task name
+				 configMINIMAL_STACK_SIZE,//Task stack size
+				 NULL,	// Task function argument to transfer
+				 2,  	// Priority
+				 &xTaskHandle2);// Tasks handle
+
+	 //4) Starts the scheduler
+	 vTaskStartScheduler();
+
+
+	for(;;);
+}
+
+
+void vTask1_handler(void *param )
+{
+	while(1)
+	{
+		printf("This is hello world from TASK1\n");
+	}
+}
+
+void vTask2_handler(void *param )
+{
+	while(1)
+	{
+		printf("This is hello world from TASK2\n");
+	}
+}
+
+
+static void prvSetupHardware(void)
+{
+
+
+}

@@ -1,0 +1,131 @@
+/**
+  ******************************************************************************
+  * @file    main.c
+  * @author  Ac6
+  * @version V1.0
+  * @date    01-December-2013
+  * @brief   Default main function.
+  ******************************************************************************
+*/
+
+
+#include "stdio.h"
+#include "stdint.h"
+
+#include "stm32f4xx.h"
+#include "FreeRTOS.h"
+#include "task.h"
+
+			
+void vTask1_handler(void *param );
+void vTask2_handler(void *param );
+
+TaskHandle_t xTaskHandle1 = NULL;
+TaskHandle_t xTaskHandle2 = NULL;
+
+extern void initialise_monitor_handles();
+static void prvSetupHardware(void);
+
+
+
+
+int main(void)
+{
+
+#ifdef USE_SEMIHOSTING
+	initialise_monitor_handles();
+	printf("This is hello world example code\n");
+#endif
+
+	prvSetupHardware();
+
+
+	//1) HSI ON, PLL OFF, HSE OFF, System clock = 16MHz, CPU clock 16MHz
+	RCC_DeInit();
+
+	//2) Update the system clock variable(to 16MHz)
+	SystemCoreClockUpdate();
+
+    //3) Create 2 tasks
+	 xTaskCreate(vTask1_handler,//Task function
+			 	 "Task-1",      //Task name
+				 configMINIMAL_STACK_SIZE, //Task stack size
+				 NULL,          // Task function argument to transfer
+				 2,             // Priority
+				 &xTaskHandle1);// Tasks handle
+
+	 xTaskCreate(vTask2_handler,//Task function
+			 	 "Task-2",//Task name
+				 configMINIMAL_STACK_SIZE,//Task stack size
+				 NULL,	// Task function argument to transfer
+				 2,  	// Priority
+				 &xTaskHandle2);// Tasks handle
+
+	 //4) Starts the scheduler
+	 vTaskStartScheduler();
+
+
+	for(;;);
+}
+
+
+void vTask1_handler(void *param )
+{
+	while(1)
+	{
+		printf("This is hello world from TASK1\n");
+	}
+}
+
+void vTask2_handler(void *param )
+{
+	while(1)
+	{
+		printf("This is hello world from TASK2\n");
+	}
+}
+
+
+static void prvSetupHardware(void)
+{
+	GPIO_InitTypeDef gpio_uart_pins;
+	USART_InitTypeDef huart2_init;
+
+	//1) Enable the UART2 Peripheral clock
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2,ENABLE);
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+
+	//PA2 is UART2_TX , PA3 is UART2_RX
+
+	//2) Alternate function to work as UART2
+	gpio_uart_pins.GPIO_Pin =GPIO_Pin_2;
+	gpio_uart_pins.GPIO_Mode =GPIO_Mode_AF;
+	gpio_uart_pins.GPIO_PuPd =GPIO_PuPd_UP;
+	GPIO_Init(GPIOA,&gpio_uart_pins);
+
+	//3) AF mode settings for the pins
+
+	GPIO_PinAFConfig(GPIOA,GPIO_PinSource2,GPIO_AF_USART2);// PA2
+	GPIO_PinAFConfig(GPIOA,GPIO_PinSource3,GPIO_AF_USART2);// PA3
+
+	//4) UART parameter initializations
+	huart2_init.USART_BaudRate = 115200;
+	huart2_init.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+	huart2_init.USART_Mode = USART_Mode_Tx;
+	huart2_init.USART_Parity = USART_Parity_No;
+	huart2_init.USART_StopBits = USART_StopBits_1;
+	huart2_init.USART_WordLength = USART_WordLength_8b;
+	USART_Init(USART2,&huart2_init);
+
+
+
+
+
+
+
+
+
+
+
+
+}

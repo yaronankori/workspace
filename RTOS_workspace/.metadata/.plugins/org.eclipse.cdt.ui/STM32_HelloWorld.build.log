@@ -1,0 +1,6 @@
+16:16:28 **** Incremental Build of configuration Debug for project STM32_HelloWorld ****
+make -j12 all 
+make: Nothing to be done for 'all'.
+
+16:16:29 Build Finished (took 602ms)
+
