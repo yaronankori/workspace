@@ -1,4 +1,7 @@
 *.log
 *.xml
 *.ini
+*.snap
+*.xmi
+*.resources
 
