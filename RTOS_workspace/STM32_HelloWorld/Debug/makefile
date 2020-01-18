@@ -10,6 +10,9 @@ RM := rm -rf
 -include sources.mk
 -include startup/subdir.mk
 -include src/subdir.mk
+-include Third-Party/SEGGER/SEGGER/subdir.mk
+-include Third-Party/SEGGER/OS/subdir.mk
+-include Third-Party/SEGGER/Config/subdir.mk
 -include Third-Party/FreeRTOS/org/Source/portable/MemMang/subdir.mk
 -include Third-Party/FreeRTOS/org/Source/portable/GCC/ARM_CM4F/subdir.mk
 -include Third-Party/FreeRTOS/org/Source/subdir.mk

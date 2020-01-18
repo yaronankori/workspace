@@ -49,8 +49,7 @@ int main(void)
 	printf("This is hello world example code\n");
 #endif
 
-
-
+	DWT->CTRL |= (1 << 0);// ENABLE the CYCCNT in DWT_CTRL (Time couner for the tracking of the system view)
 
 	//1) HSI ON, PLL OFF, HSE OFF, System clock = 16MHz, CPU clock 16MHz
 	RCC_DeInit();
@@ -63,7 +62,9 @@ int main(void)
 	sprintf(usr_msg,"This is hellow world application starting\r\n");
 	printmsg(usr_msg);
 
-
+	//Start recording
+	SEGGER_SYSVIEW_Conf();
+	SEGGER_SYSVIEW_Start();
 
     //3) Create 2 tasks
 	 xTaskCreate(vTask1_handler,//Task function
