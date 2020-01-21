@@ -1,4 +1,4 @@
 SystemWorkbench.userCDialectCompilerOption=
 SystemWorkbench.userCppDialectForCPPProjectCompilerOption=
-SystemWorkbench.userFirmwareRepositoryLocations=C\:\\Users\\Yankori\\Downloads\\STM32F4xx_DSP_StdPeriph_Lib_V1.8.0;C\:\\Users\\Yankori\\Downloads\\STM32F4xx_DSP_StdPeriph_Lib_V1.8.0\\Libraries;C\:\\Users\\Yankori\\AppData\\Roaming\\Ac6\\SW4STM32\\firmwares;C\:\\Users\\Yankori\\STM32Cube\\Repository;
+SystemWorkbench.userFirmwareRepositoryLocations=C\:\\Users\\User\\AppData\\Roaming\\Ac6\\SW4STM32\\firmwares\\STM32F4xx_DSP_StdPeriph_Lib_V1.8.0;C\:\\Users\\User\\AppData\\Roaming\\Ac6\\SW4STM32\\firmwares\\STM32F4xx_DSP_StdPeriph_Lib_V1.8.0\\Libraries;C\:\\Users\\Yankori\\Downloads\\STM32F4xx_DSP_StdPeriph_Lib_V1.8.0;C\:\\Users\\Yankori\\Downloads\\STM32F4xx_DSP_StdPeriph_Lib_V1.8.0\\Libraries;C\:\\Users\\Yankori\\AppData\\Roaming\\Ac6\\SW4STM32\\firmwares;C\:\\Users\\User\\AppData\\Roaming\\Ac6\\SW4STM32\\firmwares;C\:\\Users\\Yankori\\STM32Cube\\Repository;C\:\\Users\\User\\STM32Cube\\Repository;
 eclipse.preferences.version=1

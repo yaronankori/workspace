@@ -2,29 +2,29 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="false" key="isRegEx"/>
-		<item value="RTT_USE_ASM" key="selection"/>
+		<item value="printmsgUART1" key="selection"/>
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="true" key="wrap"/>
 		<item value="false" key="wholeword"/>
 		<list key="findhistory">
-			<item value="_CC_HAS_RTT_ASM_SUPPORT"/>
-			<item value="RTT_USE_ASM"/>
-			<item value="SEGGER_RTT_WriteSkipNoLock"/>
-			<item value="SEGGER_RTT"/>
-			<item value="RTT"/>
-			<item value="usart_getflag"/>
-			<item value="USART_Mode"/>
-			<item value="GPIO_PinSource"/>
+			<item value="printmsgUART1"/>
+			<item value="prvSetupUART1"/>
+			<item value="HAL_UART_MspInit"/>
+			<item value="MSP_INIT"/>
+			<item value="GPIOMode_TypeDef"/>
+			<item value="GPIO_PinAFConfig"/>
+			<item value="printmsg"/>
+			<item value="sprintf"/>
 		</list>
 		<list key="replacehistory">
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item value="284" key="DIALOG_WIDTH"/>
-		<item value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|5|0|Segoe UI" key="DIALOG_FONT_NAME"/>
+		<item value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI" key="DIALOG_FONT_NAME"/>
 		<item value="391" key="DIALOG_HEIGHT"/>
-		<item value="826" key="DIALOG_X_ORIGIN"/>
-		<item value="268" key="DIALOG_Y_ORIGIN"/>
+		<item value="1086" key="DIALOG_X_ORIGIN"/>
+		<item value="179" key="DIALOG_Y_ORIGIN"/>
 	</section>
 </section>

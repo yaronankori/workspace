@@ -7479,6 +7479,10 @@ Discarded input sections
  .group         0x00000000        0xc src/main.o
  .group         0x00000000        0xc src/main.o
  .text          0x00000000        0x0 src/main.o
+ .text.prvSetupUART3
+                0x00000000       0x9c src/main.o
+ .text.printmsgUART3
+                0x00000000       0x40 src/main.o
  .debug_macro   0x00000000      0xa72 src/main.o
  .debug_macro   0x00000000       0x22 src/main.o
  .debug_macro   0x00000000       0x58 src/main.o
@@ -8299,11 +8303,11 @@ LOAD c:/ac6/systemworkbench/plugins/fr.ac6.mcu.externaltools.arm-none.win32_1.17
                 0x08004fa4                vTask2_handler
  .text.prvSetupHardware
                 0x08004fe4        0xc src/main.o
- .text.prvSetupUART
+ .text.prvSetupUART2
                 0x08004ff0       0x9c src/main.o
- .text.printmsg
+ .text.printmsgUART2
                 0x0800508c       0x50 src/main.o
-                0x0800508c                printmsg
+                0x0800508c                printmsgUART2
  .text.SystemInit
                 0x080050dc       0x6c src/system_stm32f4xx.o
                 0x080050dc                SystemInit
@@ -8653,7 +8657,7 @@ LOAD c:/ac6/systemworkbench/plugins/fr.ac6.mcu.externaltools.arm-none.win32_1.17
                 0x000005e2       0x22 c:/ac6/systemworkbench/plugins/fr.ac6.mcu.externaltools.arm-none.win32_1.17.0.201812190825/tools/compiler/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crtn.o
 OUTPUT(STM32_HelloWorld.elf elf32-littlearm)
 
-.debug_frame    0x00000000     0x3aa0
+.debug_frame    0x00000000     0x3ae8
  .debug_frame   0x00000000       0x2c c:/ac6/systemworkbench/plugins/fr.ac6.mcu.externaltools.arm-none.win32_1.17.0.201812190825/tools/compiler/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc.a(lib_a-init.o)
  .debug_frame   0x0000002c       0x38 c:/ac6/systemworkbench/plugins/fr.ac6.mcu.externaltools.arm-none.win32_1.17.0.201812190825/tools/compiler/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc.a(lib_a-memset.o)
  .debug_frame   0x00000064       0x5c c:/ac6/systemworkbench/plugins/fr.ac6.mcu.externaltools.arm-none.win32_1.17.0.201812190825/tools/compiler/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc.a(lib_a-__call_atexit.o)
@@ -8674,11 +8678,11 @@ OUTPUT(STM32_HelloWorld.elf elf32-littlearm)
  .debug_frame   0x000026fc      0x100 Third-Party/SEGGER/OS/SEGGER_SYSVIEW_FreeRTOS.o
  .debug_frame   0x000027fc      0x554 Third-Party/SEGGER/SEGGER/SEGGER_RTT.o
  .debug_frame   0x00002d50      0xbc4 Third-Party/SEGGER/SEGGER/SEGGER_SYSVIEW.o
- .debug_frame   0x00003914       0xd8 src/main.o
- .debug_frame   0x000039ec       0x7c src/system_stm32f4xx.o
- .debug_frame   0x00003a68       0x38 c:/ac6/systemworkbench/plugins/fr.ac6.mcu.externaltools.arm-none.win32_1.17.0.201812190825/tools/compiler/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc.a(lib_a-memcmp.o)
+ .debug_frame   0x00003914      0x120 src/main.o
+ .debug_frame   0x00003a34       0x7c src/system_stm32f4xx.o
+ .debug_frame   0x00003ab0       0x38 c:/ac6/systemworkbench/plugins/fr.ac6.mcu.externaltools.arm-none.win32_1.17.0.201812190825/tools/compiler/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc.a(lib_a-memcmp.o)
 
-.debug_info     0x00000000    0x10e38
+.debug_info     0x00000000    0x10ea4
  .debug_info    0x00000000      0x62b StdPeriph_Driver/src/stm32f4xx_gpio.o
  .debug_info    0x0000062b      0xf8e StdPeriph_Driver/src/stm32f4xx_rcc.o
  .debug_info    0x000015b9      0x9d4 StdPeriph_Driver/src/stm32f4xx_usart.o
@@ -8692,9 +8696,9 @@ OUTPUT(STM32_HelloWorld.elf elf32-littlearm)
  .debug_info    0x000097eb      0xb8c Third-Party/SEGGER/OS/SEGGER_SYSVIEW_FreeRTOS.o
  .debug_info    0x0000a377     0x1952 Third-Party/SEGGER/SEGGER/SEGGER_RTT.o
  .debug_info    0x0000bcc9     0x3c70 Third-Party/SEGGER/SEGGER/SEGGER_SYSVIEW.o
- .debug_info    0x0000f939      0xebc src/main.o
- .debug_info    0x000107f5      0x621 src/system_stm32f4xx.o
- .debug_info    0x00010e16       0x22 startup/startup_stm32.o
+ .debug_info    0x0000f939      0xf28 src/main.o
+ .debug_info    0x00010861      0x621 src/system_stm32f4xx.o
+ .debug_info    0x00010e82       0x22 startup/startup_stm32.o
 
 .debug_abbrev   0x00000000     0x2305
  .debug_abbrev  0x00000000      0x1bf StdPeriph_Driver/src/stm32f4xx_gpio.o
@@ -8714,7 +8718,7 @@ OUTPUT(STM32_HelloWorld.elf elf32-littlearm)
  .debug_abbrev  0x00002196      0x15d src/system_stm32f4xx.o
  .debug_abbrev  0x000022f3       0x12 startup/startup_stm32.o
 
-.debug_aranges  0x00000000      0xd48
+.debug_aranges  0x00000000      0xd58
  .debug_aranges
                 0x00000000       0x88 StdPeriph_Driver/src/stm32f4xx_gpio.o
  .debug_aranges
@@ -8742,13 +8746,13 @@ OUTPUT(STM32_HelloWorld.elf elf32-littlearm)
  .debug_aranges
                 0x00000a28      0x280 Third-Party/SEGGER/SEGGER/SEGGER_SYSVIEW.o
  .debug_aranges
-                0x00000ca8       0x48 src/main.o
+                0x00000ca8       0x58 src/main.o
  .debug_aranges
-                0x00000cf0       0x30 src/system_stm32f4xx.o
+                0x00000d00       0x30 src/system_stm32f4xx.o
  .debug_aranges
-                0x00000d20       0x28 startup/startup_stm32.o
+                0x00000d30       0x28 startup/startup_stm32.o
 
-.debug_ranges   0x00000000      0xc50
+.debug_ranges   0x00000000      0xc60
  .debug_ranges  0x00000000       0x78 StdPeriph_Driver/src/stm32f4xx_gpio.o
  .debug_ranges  0x00000078      0x1d8 StdPeriph_Driver/src/stm32f4xx_rcc.o
  .debug_ranges  0x00000250       0xf0 StdPeriph_Driver/src/stm32f4xx_usart.o
@@ -8762,9 +8766,9 @@ OUTPUT(STM32_HelloWorld.elf elf32-littlearm)
  .debug_ranges  0x00000800       0x38 Third-Party/SEGGER/OS/SEGGER_SYSVIEW_FreeRTOS.o
  .debug_ranges  0x00000838      0x130 Third-Party/SEGGER/SEGGER/SEGGER_RTT.o
  .debug_ranges  0x00000968      0x270 Third-Party/SEGGER/SEGGER/SEGGER_SYSVIEW.o
- .debug_ranges  0x00000bd8       0x38 src/main.o
- .debug_ranges  0x00000c10       0x20 src/system_stm32f4xx.o
- .debug_ranges  0x00000c30       0x20 startup/startup_stm32.o
+ .debug_ranges  0x00000bd8       0x48 src/main.o
+ .debug_ranges  0x00000c20       0x20 src/system_stm32f4xx.o
+ .debug_ranges  0x00000c40       0x20 startup/startup_stm32.o
 
 .debug_macro    0x00000000     0x2ffa
  .debug_macro   0x00000000      0x1fc StdPeriph_Driver/src/stm32f4xx_gpio.o
@@ -8813,7 +8817,7 @@ OUTPUT(STM32_HelloWorld.elf elf32-littlearm)
  .debug_macro   0x00002d95       0x4c src/main.o
  .debug_macro   0x00002de1      0x219 src/system_stm32f4xx.o
 
-.debug_line     0x00000000     0xa191
+.debug_line     0x00000000     0xa1d7
  .debug_line    0x00000000      0x81f StdPeriph_Driver/src/stm32f4xx_gpio.o
  .debug_line    0x0000081f      0xb9c StdPeriph_Driver/src/stm32f4xx_rcc.o
  .debug_line    0x000013bb      0x965 StdPeriph_Driver/src/stm32f4xx_usart.o
@@ -8827,11 +8831,11 @@ OUTPUT(STM32_HelloWorld.elf elf32-littlearm)
  .debug_line    0x0000675c      0x752 Third-Party/SEGGER/OS/SEGGER_SYSVIEW_FreeRTOS.o
  .debug_line    0x00006eae      0x8a9 Third-Party/SEGGER/SEGGER/SEGGER_RTT.o
  .debug_line    0x00007757     0x1742 Third-Party/SEGGER/SEGGER/SEGGER_SYSVIEW.o
- .debug_line    0x00008e99      0xb50 src/main.o
- .debug_line    0x000099e9      0x72c src/system_stm32f4xx.o
- .debug_line    0x0000a115       0x7c startup/startup_stm32.o
+ .debug_line    0x00008e99      0xb96 src/main.o
+ .debug_line    0x00009a2f      0x72c src/system_stm32f4xx.o
+ .debug_line    0x0000a15b       0x7c startup/startup_stm32.o
 
-.debug_str      0x00000000    0x7feab
+.debug_str      0x00000000    0x7fed9
  .debug_str     0x00000000    0x6cf1d StdPeriph_Driver/src/stm32f4xx_gpio.o
                               0x6d204 (size before relaxing)
  .debug_str     0x0006cf1d      0xe86 StdPeriph_Driver/src/stm32f4xx_rcc.o
@@ -8858,11 +8862,11 @@ OUTPUT(STM32_HelloWorld.elf elf32-littlearm)
                                0x7151 (size before relaxing)
  .debug_str     0x0007d63e     0x1356 Third-Party/SEGGER/SEGGER/SEGGER_SYSVIEW.o
                                0x907d (size before relaxing)
- .debug_str     0x0007e994     0x13cc src/main.o
-                              0x789eb (size before relaxing)
- .debug_str     0x0007fd60      0x122 src/system_stm32f4xx.o
+ .debug_str     0x0007e994     0x13fa src/main.o
+                              0x78a19 (size before relaxing)
+ .debug_str     0x0007fd8e      0x122 src/system_stm32f4xx.o
                               0x6d163 (size before relaxing)
- .debug_str     0x0007fe82       0x29 startup/startup_stm32.o
+ .debug_str     0x0007feb0       0x29 startup/startup_stm32.o
                                  0x67 (size before relaxing)
 
 .comment        0x00000000       0x7f
