@@ -47,7 +47,7 @@ int main(void)
 
 	prvSetupHardware();
 
-	sprintf(usr_msg,"This is hellow world application starting\r\n");
+	sprintf(usr_msg,"This is Task Notify Demo\r\n");
 	printmsg(usr_msg);
 
 	//create a led task

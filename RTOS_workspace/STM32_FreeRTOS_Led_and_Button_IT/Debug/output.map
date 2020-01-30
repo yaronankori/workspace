@@ -8567,7 +8567,7 @@ OUTPUT(STM32_FreeRTOS_Led_and_Button_IT.elf elf32-littlearm)
  .debug_ranges  0x00000cc8       0x20 src/system_stm32f4xx.o
  .debug_ranges  0x00000ce8       0x20 startup/startup_stm32.o
 
-.debug_macro    0x00000000     0x3606
+.debug_macro    0x00000000     0x360d
  .debug_macro   0x00000000      0x1fe StdPeriph_Driver/src/stm32f4xx_exti.o
  .debug_macro   0x000001fe       0xaf StdPeriph_Driver/src/stm32f4xx_exti.o
  .debug_macro   0x000002ad      0x1fc StdPeriph_Driver/src/stm32f4xx_gpio.o
@@ -8582,41 +8582,41 @@ OUTPUT(STM32_FreeRTOS_Led_and_Button_IT.elf elf32-littlearm)
  .debug_macro   0x00001636       0x16 Third-Party/FreeRTOS/org/Source/queue.o
  .debug_macro   0x0000164c       0x35 Third-Party/FreeRTOS/org/Source/queue.o
  .debug_macro   0x00001681       0x80 Third-Party/FreeRTOS/org/Source/queue.o
- .debug_macro   0x00001701      0x2b5 Third-Party/FreeRTOS/org/Source/tasks.o
- .debug_macro   0x000019b6       0x10 Third-Party/FreeRTOS/org/Source/tasks.o
- .debug_macro   0x000019c6      0x20f Third-Party/FreeRTOS/org/Source/timers.o
- .debug_macro   0x00001bd5       0x97 Third-Party/FreeRTOS/org/Source/timers.o
- .debug_macro   0x00001c6c      0x1d6 Third-Party/FreeRTOS/org/Source/portable/GCC/ARM_CM4F/port.o
- .debug_macro   0x00001e42      0x1e1 Third-Party/FreeRTOS/org/Source/portable/MemMang/heap_4.o
- .debug_macro   0x00002023      0x116 Third-Party/SEGGER/Config/SEGGER_SYSVIEW_Config_FreeRTOS.o
- .debug_macro   0x00002139      0x1d0 Third-Party/SEGGER/OS/SEGGER_SYSVIEW_FreeRTOS.o
- .debug_macro   0x00002309      0x1a7 Third-Party/SEGGER/SEGGER/SEGGER_RTT.o
- .debug_macro   0x000024b0       0x49 Third-Party/SEGGER/SEGGER/SEGGER_RTT.o
- .debug_macro   0x000024f9       0x16 Third-Party/SEGGER/SEGGER/SEGGER_RTT.o
- .debug_macro   0x0000250f      0x11c Third-Party/SEGGER/SEGGER/SEGGER_RTT.o
- .debug_macro   0x0000262b      0x1f6 Third-Party/SEGGER/SEGGER/SEGGER_SYSVIEW.o
- .debug_macro   0x00002821       0x73 Third-Party/SEGGER/SEGGER/SEGGER_SYSVIEW.o
- .debug_macro   0x00002894       0x34 Third-Party/SEGGER/SEGGER/SEGGER_SYSVIEW.o
- .debug_macro   0x000028c8       0x1c Third-Party/SEGGER/SEGGER/SEGGER_SYSVIEW.o
- .debug_macro   0x000028e4      0x42d src/main.o
- .debug_macro   0x00002d11       0x16 src/main.o
- .debug_macro   0x00002d27       0x97 src/main.o
- .debug_macro   0x00002dbe       0xfd src/main.o
- .debug_macro   0x00002ebb       0x10 src/main.o
- .debug_macro   0x00002ecb       0x10 src/main.o
- .debug_macro   0x00002edb       0x1c src/main.o
- .debug_macro   0x00002ef7       0x52 src/main.o
- .debug_macro   0x00002f49       0x40 src/main.o
- .debug_macro   0x00002f89       0x10 src/main.o
- .debug_macro   0x00002f99       0x40 src/main.o
- .debug_macro   0x00002fd9       0xd7 src/main.o
- .debug_macro   0x000030b0       0x1c src/main.o
- .debug_macro   0x000030cc       0x3d src/main.o
- .debug_macro   0x00003109       0x16 src/main.o
- .debug_macro   0x0000311f      0x16f src/main.o
- .debug_macro   0x0000328e      0x113 src/main.o
- .debug_macro   0x000033a1       0x4c src/main.o
- .debug_macro   0x000033ed      0x219 src/system_stm32f4xx.o
+ .debug_macro   0x00001701      0x2bc Third-Party/FreeRTOS/org/Source/tasks.o
+ .debug_macro   0x000019bd       0x10 Third-Party/FreeRTOS/org/Source/tasks.o
+ .debug_macro   0x000019cd      0x20f Third-Party/FreeRTOS/org/Source/timers.o
+ .debug_macro   0x00001bdc       0x97 Third-Party/FreeRTOS/org/Source/timers.o
+ .debug_macro   0x00001c73      0x1d6 Third-Party/FreeRTOS/org/Source/portable/GCC/ARM_CM4F/port.o
+ .debug_macro   0x00001e49      0x1e1 Third-Party/FreeRTOS/org/Source/portable/MemMang/heap_4.o
+ .debug_macro   0x0000202a      0x116 Third-Party/SEGGER/Config/SEGGER_SYSVIEW_Config_FreeRTOS.o
+ .debug_macro   0x00002140      0x1d0 Third-Party/SEGGER/OS/SEGGER_SYSVIEW_FreeRTOS.o
+ .debug_macro   0x00002310      0x1a7 Third-Party/SEGGER/SEGGER/SEGGER_RTT.o
+ .debug_macro   0x000024b7       0x49 Third-Party/SEGGER/SEGGER/SEGGER_RTT.o
+ .debug_macro   0x00002500       0x16 Third-Party/SEGGER/SEGGER/SEGGER_RTT.o
+ .debug_macro   0x00002516      0x11c Third-Party/SEGGER/SEGGER/SEGGER_RTT.o
+ .debug_macro   0x00002632      0x1f6 Third-Party/SEGGER/SEGGER/SEGGER_SYSVIEW.o
+ .debug_macro   0x00002828       0x73 Third-Party/SEGGER/SEGGER/SEGGER_SYSVIEW.o
+ .debug_macro   0x0000289b       0x34 Third-Party/SEGGER/SEGGER/SEGGER_SYSVIEW.o
+ .debug_macro   0x000028cf       0x1c Third-Party/SEGGER/SEGGER/SEGGER_SYSVIEW.o
+ .debug_macro   0x000028eb      0x42d src/main.o
+ .debug_macro   0x00002d18       0x16 src/main.o
+ .debug_macro   0x00002d2e       0x97 src/main.o
+ .debug_macro   0x00002dc5       0xfd src/main.o
+ .debug_macro   0x00002ec2       0x10 src/main.o
+ .debug_macro   0x00002ed2       0x10 src/main.o
+ .debug_macro   0x00002ee2       0x1c src/main.o
+ .debug_macro   0x00002efe       0x52 src/main.o
+ .debug_macro   0x00002f50       0x40 src/main.o
+ .debug_macro   0x00002f90       0x10 src/main.o
+ .debug_macro   0x00002fa0       0x40 src/main.o
+ .debug_macro   0x00002fe0       0xd7 src/main.o
+ .debug_macro   0x000030b7       0x1c src/main.o
+ .debug_macro   0x000030d3       0x3d src/main.o
+ .debug_macro   0x00003110       0x16 src/main.o
+ .debug_macro   0x00003126      0x16f src/main.o
+ .debug_macro   0x00003295      0x113 src/main.o
+ .debug_macro   0x000033a8       0x4c src/main.o
+ .debug_macro   0x000033f4      0x219 src/system_stm32f4xx.o
 
 .debug_line     0x00000000     0xb569
  .debug_line    0x00000000      0x777 StdPeriph_Driver/src/stm32f4xx_exti.o

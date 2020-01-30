@@ -37,10 +37,10 @@ endif
 all: STM32_FreeRTOS_TaskNotify.elf
 
 # Tool invocations
-STM32_FreeRTOS_TaskNotify.elf: $(OBJS) $(USER_OBJS) C:\Users\Yankori\workspace\RTOS_workspace\STM32_FreeRTOS_TaskNotify/LinkerScript.ld
+STM32_FreeRTOS_TaskNotify.elf: $(OBJS) $(USER_OBJS) C:\Users\User\workspace\RTOS_workspace\STM32_FreeRTOS_TaskNotify/LinkerScript.ld
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU GCC Linker'
-	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -T"C:/Users/Yankori/workspace/RTOS_workspace/STM32_FreeRTOS_TaskNotify/LinkerScript.ld" -Wl,-Map=output.map -Wl,--gc-sections -o "STM32_FreeRTOS_TaskNotify.elf" @"objects.list" $(USER_OBJS) $(LIBS) -lm
+	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -T"C:/Users/User/workspace/RTOS_workspace/STM32_FreeRTOS_TaskNotify/LinkerScript.ld" -Wl,-Map=output.map -Wl,--gc-sections -o "STM32_FreeRTOS_TaskNotify.elf" @"objects.list" $(USER_OBJS) $(LIBS) -lm
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build

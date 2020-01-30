@@ -15,7 +15,7 @@ startup/%.o: ../startup/%.s
 	@echo 'Building file: $<'
 	@echo 'Invoking: MCU GCC Assembler'
 	@echo $(PWD)
-	arm-none-eabi-as -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -I"C:/Users/Yankori/workspace/RTOS_workspace/STM32_FreeRTOS_TaskNotify/StdPeriph_Driver/inc" -I"C:/Users/Yankori/workspace/RTOS_workspace/STM32_FreeRTOS_TaskNotify/inc" -I"C:/Users/Yankori/workspace/RTOS_workspace/STM32_FreeRTOS_TaskNotify/CMSIS/device" -I"C:/Users/Yankori/workspace/RTOS_workspace/STM32_FreeRTOS_TaskNotify/CMSIS/core" -g -o "$@" "$<"
+	arm-none-eabi-as -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -I"C:/Users/User/workspace/RTOS_workspace/STM32_FreeRTOS_TaskNotify/StdPeriph_Driver/inc" -I"C:/Users/User/workspace/RTOS_workspace/STM32_FreeRTOS_TaskNotify/inc" -I"C:/Users/User/workspace/RTOS_workspace/STM32_FreeRTOS_TaskNotify/CMSIS/device" -I"C:/Users/User/workspace/RTOS_workspace/STM32_FreeRTOS_TaskNotify/CMSIS/core" -g -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
