@@ -50,8 +50,8 @@ CRC_HandleTypeDef hcrc;
 UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
 
-#define D_UART &huart2
-#define C_UART &huart3
+#define D_UART &huart3 //Debug
+#define C_UART &huart2
 
 // Bootloader commands
 
@@ -91,13 +91,27 @@ UART_HandleTypeDef huart3;
 //This command is used to disable all protections from the chip
 #define BL_DIS_R_W_PROTECT 0x5C
 
+// Ack and Nack bytes
+#define BL_ACK  0xA5
+#define BL_NACK 0x7F
 
+#define VERIFY_CRC_SUCESS 0x00
+#define VERIFY_CRC_FAIL 0x01
 
+// Our version is 1.0
+#define BL_VERSION 0x10
 
 static void printmsg(char *format,...);
 
 void bootloader_uart_read_data(void);
 void bootloader_jump_to_user_app(void);
+uint8_t bootloader_veryfy_crc(uint8_t *pData,uint32_t len,uint32_t crc_host);
+void bootloader_uart_write_data(uint8_t *pBuffer,uint32_t len);
+
+//implementation of bootloader support function
+void bootloader_send_ack(uint8_t command_code, uint8_t follow_len);
+void bootloader_send_nack(void);
+uint8_t get_bootloader_version(void);
 
 
 
@@ -160,7 +174,8 @@ int main(void)
 
   /* USER CODE END 2 */
  
-	 HAL_UART_Transmit(&huart2,(uint8_t*)somedata,sizeof(somedata),100); 
+	 HAL_UART_Transmit(D_UART,(uint8_t*)somedata,sizeof(somedata),100); 
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -175,13 +190,14 @@ int main(void)
 	 while(HAL_GetTick() <= current_tick+500);
 			
 	 static char OpEnable = 1; // for 1 time enable of the operation, or going to boot or going to user application
-    		
-	 if(HAL_GPIO_ReadPin(B1_GPIO_Port ,B1_Pin) == GPIO_PIN_RESET)	
+  
+   if(1)		
+	 //if(HAL_GPIO_ReadPin(B1_GPIO_Port ,B1_Pin) == GPIO_PIN_RESET)	
 	 {
 		  if(OpEnable==1)
 			{
-				bootloader_uart_read_data();
 				printmsg("BL_DEBUG_MSG:Button is pressed.. going to BL mode\r\n");
+				bootloader_uart_read_data();
 							
 				OpEnable = 0;
 			}
@@ -220,7 +236,7 @@ void bootloader_uart_read_data(void)
 		
 		rcv_len = bl_rx_buffer[0];
 		
-		HAL_UART_Receive(C_UART,bl_rx_buffer,rcv_len,HAL_MAX_DELAY);
+		HAL_UART_Receive(C_UART,&bl_rx_buffer[1],rcv_len,HAL_MAX_DELAY);
 		
 		switch(bl_rx_buffer[1])
 		{
@@ -482,9 +498,79 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
 
 }
+
+//implementation of bootloader support function
+void bootloader_send_ack(uint8_t command_code, uint8_t follow_len)
+{
+	//here we send to bytes first byte is ack and second byte is len value
+	uint8_t ack_buf[2];
+	ack_buf[0] = BL_ACK;
+	ack_buf[1] = follow_len;
+	HAL_UART_Transmit(C_UART,ack_buf,2,HAL_MAX_DELAY);
+}
+
+void bootloader_send_nack(void)
+{
+	uint8_t nack = BL_NACK;
+	HAL_UART_Transmit(C_UART,&nack,1,HAL_MAX_DELAY);
+}
+
+uint8_t bootloader_veryfy_crc(uint8_t *pData,uint32_t len,uint32_t crc_host)
+{
+	uint32_t uwCRCValue = 0xFF;
+	
+	for(uint32_t i=0 ;i<len; i++)
+	{
+		uint32_t i_data = pData[i];
+		uwCRCValue = HAL_CRC_Accumulate(&hcrc,&i_data,1);
+	}
+	
+	if(uwCRCValue == crc_host)
+	{
+		return VERIFY_CRC_SUCESS;
+	}
+	
+	return VERIFY_CRC_FAIL;
+}
+
+// Just return the boot loader value
+uint8_t get_bootloader_version(void)
+{
+	return(uint8_t)BL_VERSION;
+}
+
+// write data from the bootlaoder
+void bootloader_uart_write_data(uint8_t *pBuffer,uint32_t len)
+{
+	HAL_UART_Transmit(C_UART,pBuffer,len,HAL_MAX_DELAY);
+}
+
+// Implementation of bootloader commands
 void bootloader_handle_getver_cmd(uint8_t* bl_rx_buffer)
 {
+	uint8_t bl_version;
 	
+	uint32_t command_packet_len = bl_rx_buffer[0] + 1; // get the len value from the host message
+	uint32_t host_crc = *((uint32_t *) (bl_rx_buffer + command_packet_len -4)); // get the crc value that was sent by the host
+	
+	
+	//1. Verify the checksum	
+	 printmsg("BL_DEBUG_MSG: bootloader_handle_getver_cmd \r\n");
+	 if(!bootloader_veryfy_crc(&bl_rx_buffer[0],command_packet_len-4,host_crc))
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum success\r\n");
+		 //checksum is correct..
+		 bootloader_send_ack(bl_rx_buffer[0],1);// send ack
+		 bl_version = get_bootloader_version();
+		 printmsg("BL_DEBUG_MSG: BL_VER:%d\r\n",bl_version);
+		 bootloader_uart_write_data(&bl_version,1); //send data
+	 }
+	 else
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum fail !\r\n");
+		 // checksum is wrong, send nack
+		 bootloader_send_nack();// send nack
+	 }
 }
 void bootloader_handle_gethelp_cmd(uint8_t* bl_rx_buffer)
 {
