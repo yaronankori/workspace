@@ -99,7 +99,7 @@ UART_HandleTypeDef huart3;
 #define VERIFY_CRC_FAIL 0x01
 
 // Our version is 1.0
-#define BL_VERSION 0x10
+#define BL_VERSION 0x01
 
 static void printmsg(char *format,...);
 
@@ -107,13 +107,28 @@ void bootloader_uart_read_data(void);
 void bootloader_jump_to_user_app(void);
 uint8_t bootloader_veryfy_crc(uint8_t *pData,uint32_t len,uint32_t crc_host);
 void bootloader_uart_write_data(uint8_t *pBuffer,uint32_t len);
+uint8_t get_flash_rdp_level(void);
 
 //implementation of bootloader support function
 void bootloader_send_ack(uint8_t command_code, uint8_t follow_len);
 void bootloader_send_nack(void);
 uint8_t get_bootloader_version(void);
 
-
+							
+uint8_t supported_command[] = {BL_GET_VER	,
+															BL_GET_HELP ,
+															BL_GET_CID ,
+															BL_GET_RDP_STATUS,
+															BL_GO_TO_ADDR,
+															BL_FLASH_ERASE,
+															BL_MEM_WRITE,
+															BL_EN_R_W_PROTECT,
+															BL_MEM_READ,
+															BL_READ_SECTOR_STATUS,
+															BL_OTP_READ,		
+															BL_DIS_R_W_PROTECT	
+															} ;											
+	
 
 /* USER CODE BEGIN PV */
 
@@ -125,6 +140,7 @@ static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_CRC_Init(void);
 static void MX_USART3_UART_Init(void);
+static uint16_t get_mcu_chip_id(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -191,7 +207,7 @@ int main(void)
 			
 	 static char OpEnable = 1; // for 1 time enable of the operation, or going to boot or going to user application
   
-   if(1)		
+	 if(1)	
 	 //if(HAL_GPIO_ReadPin(B1_GPIO_Port ,B1_Pin) == GPIO_PIN_RESET)	
 	 {
 		  if(OpEnable==1)
@@ -574,17 +590,107 @@ void bootloader_handle_getver_cmd(uint8_t* bl_rx_buffer)
 }
 void bootloader_handle_gethelp_cmd(uint8_t* bl_rx_buffer)
 {
+	uint32_t command_packet_len = bl_rx_buffer[0] + 1; // get the len value from the host message
+	uint32_t host_crc = *((uint32_t *) (bl_rx_buffer + command_packet_len -4)); // get the crc value that was sent by the host
 	
+	
+	//1. Verify the checksum	
+	 printmsg("BL_DEBUG_MSG: bootloader_handle_gethelp_cmd \r\n");
+	 if(!bootloader_veryfy_crc(&bl_rx_buffer[0],command_packet_len-4,host_crc))
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum success\r\n");
+		 //checksum is correct..
+		 bootloader_send_ack(bl_rx_buffer[0],sizeof(supported_command));// send ack
+		 bootloader_uart_write_data(supported_command,sizeof(supported_command)); //send data
+	 }
+	 else
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum fail !\r\n");
+		 // checksum is wrong, send nack
+		 bootloader_send_nack();// send nack
+	 }
 }	
 
 void bootloader_handle_getcid_cmd(uint8_t* bl_rx_buffer)
 {
+	uint16_t bl_cid_num = 0;
+	printmsg("BL_DEBUG_MSG: bootloader_handle_getcid_cmd \r\n");
 	
+	// Total length of the command packet
+	uint32_t command_packet_len = bl_rx_buffer[0] + 1; // get the len value from the host message
+	
+	// Extract the CRC32 sent by the Host
+	uint32_t host_crc = *((uint32_t *) (bl_rx_buffer + command_packet_len -4)); // get the crc value that was sent by the host
+	
+	
+	//1. Verify the checksum	
+	 if(!bootloader_veryfy_crc(&bl_rx_buffer[0],command_packet_len-4,host_crc))
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum success\r\n");
+		 //checksum is correct..
+		 bl_cid_num = get_mcu_chip_id();
+		 bootloader_send_ack(bl_rx_buffer[0],sizeof(bl_cid_num));// send ack
+		 bootloader_uart_write_data((uint8_t*)&bl_cid_num,sizeof(bl_cid_num)); //send data
+	 }
+	 else
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum fail !\r\n");
+		 // checksum is wrong, send nack
+		 bootloader_send_nack();// send nack
+	 }
+	
+}
+// Read the MCU ID number that includes the MCU part number
+uint16_t get_mcu_chip_id(void)
+{
+	uint16_t cid;
+	
+	cid = (uint16_t)(DBGMCU->IDCODE) & 0x0FFF;
+	return cid;
 }
 void bootloader_handle_getrdp_cmd(uint8_t* bl_rx_buffer)
 {
+	uint8_t rdp_level = 0x00;
+	
+	printmsg("BL_DEBUG_MSG: bootloader_handle_getrdp_cmd \r\n");
+	
+	// Total length of the command packet
+	uint32_t command_packet_len = bl_rx_buffer[0] + 1; // get the len value from the host message
+	
+	// Extract the CRC32 sent by the Host
+	uint32_t host_crc = *((uint32_t *) (bl_rx_buffer + command_packet_len -4)); // get the crc value that was sent by the host
+	
+	
+	//1. Verify the checksum	
+	 if(!bootloader_veryfy_crc(&bl_rx_buffer[0],command_packet_len-4,host_crc))
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum success\r\n");
+		 //checksum is correct..
+		 rdp_level = get_flash_rdp_level();
+		 bootloader_send_ack(bl_rx_buffer[0],sizeof(rdp_level));// send ack
+		 bootloader_uart_write_data(&rdp_level,sizeof(rdp_level)); //send data
+	 }
+	 else
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum fail !\r\n");
+		 // checksum is wrong, send nack
+		 bootloader_send_nack();// send nack
+	 }
 	
 }	
+uint8_t get_flash_rdp_level(void)
+{
+	uint8_t rdp_status = 0;
+	
+	volatile uint32_t *pOB_addr = (uint32_t*) 0x1FFFC000;
+  rdp_status = (uint8_t)(*pOB_addr >> 8);
+	
+	return rdp_status;
+}
+
+
+
+
 void bootloader_handle_goto_cmd(uint8_t* bl_rx_buffer)
 {
 	
