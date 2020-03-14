@@ -4,4 +4,16 @@
 *.snap
 *.xmi
 *.resources
+*.o
 
+/KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/stm32f4xx_hal_msp.crf
+/KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/stm32f4xx_it.crf
+/KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx.uvguix.User
+/KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/bootloader_STM32F446xx.axf
+/KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/bootloader_STM32F446xx.build_log.htm
+/KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/bootloader_STM32F446xx.hex
+/KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/bootloader_STM32F446xx.htm
+/KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/bootloader_STM32F446xx.map
+/KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/bootloader_STM32F446xx_bootloader_STM32F446xx.dep
+/KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/main.crf
+/KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/main.o
