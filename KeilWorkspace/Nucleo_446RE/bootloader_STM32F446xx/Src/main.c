@@ -135,7 +135,8 @@ static void MX_USART2_UART_Init(void);
 static void MX_CRC_Init(void);
 static void MX_USART3_UART_Init(void);
 static uint16_t get_mcu_chip_id(void);
-static uint8_t verify_address(uint32_t go_address);															
+static uint8_t verify_address(uint32_t go_address);		
+uint8_t execute_flash_erase(uint8_t sector_number, uint8_t number_of_sectors);															
 															
 /* USER CODE BEGIN PFP */
 
@@ -797,32 +798,158 @@ uint8_t verify_address(uint32_t go_address)
 
 void bootloader_handle_flasherase_cmd(uint8_t* bl_rx_buffer)
 {
+  uint8_t erase_status = 0x00;
+	
+	printmsg("BL_DEBUG_MSG: bootloader_handle_flasherase_cmd \r\n");
+	
+	// Total length of the command packet
+	uint32_t command_packet_len = bl_rx_buffer[0] + 1; // get the len value from the host message
+	
+	// Extract the CRC32 sent by the Host
+	uint32_t host_crc = *((uint32_t *) (bl_rx_buffer + command_packet_len -4)); // get the crc value that was sent by the host
+	
+	
+	//1. Verify the checksum	
+	 if(!bootloader_veryfy_crc(&bl_rx_buffer[0],command_packet_len-4,host_crc))
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum success\r\n");
+		 //checksum is correct..
+		 //rdp_level = get_flash_rdp_level();
+		 bootloader_send_ack(bl_rx_buffer[0],1);// send ack
+		 printmsg("BL_DEBUG_MSG: initial_sector: %d  no_o0f_sectors: %d  \r\n",bl_rx_buffer[2],bl_rx_buffer[3]);
+		 HAL_GPIO_WritePin(LD2_GPIO_Port,LD2_Pin,1); // Toggle LED
+		 erase_status  = execute_flash_erase(bl_rx_buffer[2],bl_rx_buffer[3]);
+		 HAL_GPIO_WritePin(LD2_GPIO_Port,LD2_Pin,0); // Toggle LED
+		 
+		 printmsg("BL_DEBUG_MSG: flash erase status: %x\r\n",erase_status);
+		 
+		 bootloader_uart_write_data(&erase_status,1); //send data
+	 }
+	 else
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum fail !\r\n");
+		 // checksum is wrong, send nack
+		 bootloader_send_nack();// send nack
+	 }
 	
 }
+
+
+uint8_t execute_flash_erase(uint8_t sector_number, uint8_t number_of_sectors)
+{
+	// we have totally 8 sectors in SMT32F446RE sector 0-7
+	// number_of_sector has to be in range of 0 to 7
+	// if sector_number = 0xFF that means mass erase
+	// Code needs to modified if your MCU supports more flash sectors
+	
+	FLASH_EraseInitTypeDef flashErase_handle;
+	uint32_t sectorError;
+	static HAL_StatusTypeDef status;
+	
+	if((number_of_sectors > 8) && (sector_number != 0xFF))
+		return INVALID_SECTOR;
+	
+	if((sector_number == 0xFF) || (sector_number <= 7))
+	{
+	
+			if(sector_number == (uint8_t)0xff)
+			{
+				flashErase_handle.TypeErase = FLASH_TYPEERASE_MASSERASE;
+			}
+			else
+			{
+				// calculating how many sectors to erase
+				uint8_t remaining_sector = 8-sector_number;
+				if(number_of_sectors > remaining_sector)
+				{
+					number_of_sectors  = remaining_sector;
+				}
+				flashErase_handle.TypeErase = FLASH_TYPEERASE_SECTORS;
+				flashErase_handle.Sector    = sector_number;
+				flashErase_handle.NbSectors = number_of_sectors;
+			}
+			flashErase_handle.Banks = FLASH_BANK_1; //not relevenat for us
+			
+			HAL_FLASH_Unlock(); // ST microtontrollers request unlock the flash first.
+			flashErase_handle.VoltageRange = FLASH_VOLTAGE_RANGE_3; // we workd 3 volts
+			status = (uint8_t)HAL_FLASHEx_Erase(&flashErase_handle, &sectorError);
+			HAL_FLASH_Lock();
+					
+		 return status;	 // HAL_OK
+	}
+		
+	return INVALID_SECTOR;	
+}
+//********************************************************
+//********************************************************
 void bootloader_handle_memwrite_cmd(uint8_t* bl_rx_buffer)
 {
 	
 }	
+//********************************************************
+//********************************************************
 void bootloader_handle_enrwprotect_cmd(uint8_t* bl_rx_buffer)
 {
 	
 }	
+//********************************************************
+//********************************************************
 void bootloader_handle_memread_cmd(uint8_t* bl_rx_buffer)
 {
 	
 }	
+//********************************************************
+//********************************************************
 void bootloader_handle_readsectorstatus_cmd(uint8_t* bl_rx_buffer)
 {
 	
 }	
+//********************************************************
+//********************************************************
 void bootloader_handle_otpread_cmd(uint8_t* bl_rx_buffer)
 {
 	
 }	
+//********************************************************
+//********************************************************
 void bootloader_handle_disrwprotect_cmd(uint8_t* bl_rx_buffer)
 {
 	
 }	
+//********************************************************
+//********************************************************
+
+//***********************************************
+
+  /*uint8_t XXX = 0x00;
+	
+	printmsg("BL_DEBUG_MSG: bootloader_handle_getrdp_cmd \r\n");
+	
+	// Total length of the command packet
+	uint32_t command_packet_len = bl_rx_buffer[0] + 1; // get the len value from the host message
+	
+	// Extract the CRC32 sent by the Host
+	uint32_t host_crc = *((uint32_t *) (bl_rx_buffer + command_packet_len -4)); // get the crc value that was sent by the host
+	
+	
+	//1. Verify the checksum	
+	 if(!bootloader_veryfy_crc(&bl_rx_buffer[0],command_packet_len-4,host_crc))
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum success\r\n");
+		 //checksum is correct..
+		 //rdp_level = get_flash_rdp_level();
+		 //bootloader_send_ack(bl_rx_buffer[0],sizeof(rdp_level));// send ack
+		 //bootloader_uart_write_data(&rdp_level,sizeof(rdp_level)); //send data
+	 }
+	 else
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum fail !\r\n");
+		 // checksum is wrong, send nack
+		 bootloader_send_nack();// send nack
+	 }*/
+
+//*********************************************
+
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */

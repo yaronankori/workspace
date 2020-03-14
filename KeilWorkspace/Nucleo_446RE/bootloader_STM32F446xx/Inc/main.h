@@ -107,7 +107,7 @@ void bootloader_handle_disrwprotect_cmd(uint8_t* bl_rx_buffer);
 #define BKPSRAM_SIZE 4*1024
 #define BKPSRAM_END  (SRAM2_BASE + SRAM2_SIZE)
 
-
+#define INVALID_SECTOR 0xFF
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
