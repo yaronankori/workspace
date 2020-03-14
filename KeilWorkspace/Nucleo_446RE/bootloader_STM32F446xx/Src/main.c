@@ -91,12 +91,6 @@ UART_HandleTypeDef huart3;
 //This command is used to disable all protections from the chip
 #define BL_DIS_R_W_PROTECT 0x5C
 
-// Ack and Nack bytes
-#define BL_ACK  0xA5
-#define BL_NACK 0x7F
-
-#define VERIFY_CRC_SUCESS 0x00
-#define VERIFY_CRC_FAIL 0x01
 
 // Our version is 1.0
 #define BL_VERSION 0x01
@@ -141,6 +135,8 @@ static void MX_USART2_UART_Init(void);
 static void MX_CRC_Init(void);
 static void MX_USART3_UART_Init(void);
 static uint16_t get_mcu_chip_id(void);
+static uint8_t verify_address(uint32_t go_address);															
+															
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -549,11 +545,6 @@ uint8_t bootloader_veryfy_crc(uint8_t *pData,uint32_t len,uint32_t crc_host)
 	return VERIFY_CRC_FAIL;
 }
 
-// Just return the boot loader value
-uint8_t get_bootloader_version(void)
-{
-	return(uint8_t)BL_VERSION;
-}
 
 // write data from the bootlaoder
 void bootloader_uart_write_data(uint8_t *pBuffer,uint32_t len)
@@ -561,6 +552,8 @@ void bootloader_uart_write_data(uint8_t *pBuffer,uint32_t len)
 	HAL_UART_Transmit(C_UART,pBuffer,len,HAL_MAX_DELAY);
 }
 
+//*********************************************
+//*********************************************
 // Implementation of bootloader commands
 void bootloader_handle_getver_cmd(uint8_t* bl_rx_buffer)
 {
@@ -588,6 +581,15 @@ void bootloader_handle_getver_cmd(uint8_t* bl_rx_buffer)
 		 bootloader_send_nack();// send nack
 	 }
 }
+// Just return the boot loader value
+uint8_t get_bootloader_version(void)
+{
+	return(uint8_t)BL_VERSION;
+}
+//*********************************************
+//*********************************************
+
+
 void bootloader_handle_gethelp_cmd(uint8_t* bl_rx_buffer)
 {
 	uint32_t command_packet_len = bl_rx_buffer[0] + 1; // get the len value from the host message
@@ -610,6 +612,9 @@ void bootloader_handle_gethelp_cmd(uint8_t* bl_rx_buffer)
 		 bootloader_send_nack();// send nack
 	 }
 }	
+
+//*********************************************
+//*********************************************
 
 void bootloader_handle_getcid_cmd(uint8_t* bl_rx_buffer)
 {
@@ -648,6 +653,10 @@ uint16_t get_mcu_chip_id(void)
 	cid = (uint16_t)(DBGMCU->IDCODE) & 0x0FFF;
 	return cid;
 }
+
+//*********************************************
+//*********************************************
+
 void bootloader_handle_getrdp_cmd(uint8_t* bl_rx_buffer)
 {
 	uint8_t rdp_level = 0x00;
@@ -678,6 +687,8 @@ void bootloader_handle_getrdp_cmd(uint8_t* bl_rx_buffer)
 	 }
 	
 }	
+
+
 uint8_t get_flash_rdp_level(void)
 {
 	uint8_t rdp_status = 0;
@@ -688,13 +699,102 @@ uint8_t get_flash_rdp_level(void)
 	return rdp_status;
 }
 
+//*********************************************
+//*********************************************
 
 
 
 void bootloader_handle_goto_cmd(uint8_t* bl_rx_buffer)
 {
+	uint32_t go_address=0;
+	uint8_t addr_valid = ADDR_VALID;
+	uint8_t addr_invalid = ADDR_INVALID;
 	
+	printmsg("BL_DEBUG_MSG: bootloader_handle_goto_cmd \r\n");
+	
+	// Total length of the command packet
+	uint32_t command_packet_len = bl_rx_buffer[0] + 1; // get the len value from the host message
+	
+	// Extract the CRC32 sent by the Host
+	uint32_t host_crc = *((uint32_t *) (bl_rx_buffer + command_packet_len -4)); // get the crc value that was sent by the host
+	
+	
+	//1. Verify the checksum	
+	 if(!bootloader_veryfy_crc(&bl_rx_buffer[0],command_packet_len-4,host_crc))
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum success\r\n");
+		 //checksum is correct..
+
+		 bootloader_send_ack(bl_rx_buffer[0],1);// send ack
+		 
+		 //Extract the go address
+		 go_address = *((uint32_t*)&bl_rx_buffer[2]);
+		 printmsg("BL_DEBUG_MSG: Go addr: %#x \r\n",go_address);
+		 
+		 if(verify_address(go_address) == ADDR_VALID)
+		 {
+			 // tell host that address is fine
+			 bootloader_uart_write_data(&addr_valid,1);
+			 
+			 // jump to "go" address
+			 // what is T bit? watch youtube:https://www.youtube.com/watch?v=VX_12SjnNhY
+			 
+			 go_address +=1; // make T bit=1
+			 
+			 void(*lets_jump)(void) = (void*) go_address;
+			 
+			 printmsg("BL_DEBUG_MSG: Jumping to address!\r\n");
+			 
+			 lets_jump();
+			 
+		 }
+		 else
+		 {
+			 printmsg("BL_DEBUG_MSG: GO addr invalid ! \n");
+			 bootloader_uart_write_data(&addr_invalid,1);
+		 }
+		 
+	 }
+	 else
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum fail !\r\n");
+		 // checksum is wrong, send nack
+		 bootloader_send_nack();// send nack
+	 }
 }	
+uint8_t verify_address(uint32_t go_address)
+{
+	//so what are the valid adresses to which we can jump to?
+	// can we jump to system memory? yes
+	// can we jump to sram1 memory? yes
+	// can we jump to sram2 memroy? yes
+	// can we jump to backup sram memory? yes
+	// can we jump to peripheral memory? its possible but dont allow, so no
+	// can we jump to external memory? yes
+		
+	//incomplete poorly written optimize it
+	if(go_address >= SRAM1_BASE && go_address <= SRAM1_END)
+	{
+		return ADDR_VALID;
+	}
+	else if(go_address >= SRAM2_BASE && go_address <= SRAM2_END)
+	{
+		return ADDR_VALID;
+	}
+  else if(go_address >= FLASH_BASE && go_address <= FLASH_END)
+	{
+		return ADDR_VALID;
+	}
+	else if(go_address >= BKPSRAM_BASE && go_address <= BKPSRAM_END)
+	{
+		return ADDR_VALID;
+	}
+	else
+		return ADDR_INVALID;	
+}
+//******************************************************
+//******************************************************
+
 void bootloader_handle_flasherase_cmd(uint8_t* bl_rx_buffer)
 {
 	

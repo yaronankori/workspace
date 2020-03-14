@@ -87,6 +87,27 @@ void bootloader_handle_disrwprotect_cmd(uint8_t* bl_rx_buffer);
 #define TCK_GPIO_Port GPIOA
 #define SWO_Pin GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
+
+// Ack and Nack bytes
+#define BL_ACK  0xA5
+#define BL_NACK 0x7F
+
+#define VERIFY_CRC_SUCESS 0x00
+#define VERIFY_CRC_FAIL 0x01
+
+#define ADDR_VALID 0x00
+#define ADDR_INVALID 0x01
+
+
+#define SRAM1_SIZE 112*1024
+#define SRAM1_END  (SRAM1_BASE + SRAM1_SIZE)
+#define SRAM2_SIZE 16*1024
+#define SRAM2_END  (SRAM2_BASE + SRAM2_SIZE)
+#define FLASH_SIZE 512*1024
+#define BKPSRAM_SIZE 4*1024
+#define BKPSRAM_END  (SRAM2_BASE + SRAM2_SIZE)
+
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
