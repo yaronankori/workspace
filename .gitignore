@@ -62,3 +62,13 @@
 /KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/main.o
 /KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/bootloader_STM32F446xx.hex
 /KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/bootloader_STM32F446xx.map
+/KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/stm32f4xx_hal.d
+/KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/stm32f4xx_hal_cortex.d
+/KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/stm32f4xx_hal_dma.d
+/KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/stm32f4xx_hal_exti.d
+/KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/stm32f4xx_hal_pwr.d
+/KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/stm32f4xx_hal_pwr_ex.d
+/KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/stm32f4xx_hal_tim.d
+/KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/stm32f4xx_hal_tim_ex.d
+/KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/stm32f4xx_hal_uart.d
+/KeilWorkspace/Nucleo_446RE/bootloader_STM32F446xx/MDK-ARM/bootloader_STM32F446xx/system_stm32f4xx.d
