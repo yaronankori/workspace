@@ -136,7 +136,10 @@ static void MX_CRC_Init(void);
 static void MX_USART3_UART_Init(void);
 static uint16_t get_mcu_chip_id(void);
 static uint8_t verify_address(uint32_t go_address);		
-uint8_t execute_flash_erase(uint8_t sector_number, uint8_t number_of_sectors);															
+uint8_t execute_flash_erase(uint8_t sector_number, uint8_t number_of_sectors);
+uint8_t execute_mem_write(uint8_t *pBuffer, uint32_t mem_address, uint32_t len);
+void get_sector_status(uint8_t *sector_level);			
+uint8_t configure_flash_sector_rw_protection(uint8_t sector_details,uint8_t protection_mode, uint8_t disable);											
 															
 /* USER CODE BEGIN PFP */
 
@@ -147,7 +150,7 @@ uint8_t execute_flash_erase(uint8_t sector_number, uint8_t number_of_sectors);
 
 /* USER CODE END 0 */
 char somedata[] = "Hello from bootloader\r\n"; 
-#define BL_RX_LEN 200
+#define BL_RX_LEN 256
 uint8_t bl_rx_buffer[BL_RX_LEN];
 
 
@@ -242,7 +245,7 @@ void bootloader_uart_read_data(void)
 	
 	while(1)
 	{
-		memset(bl_rx_buffer,0,200);
+		memset(bl_rx_buffer,0,256);
 		// here we will read and decode the commands comming from host
 		// first read only one byte from the host, which is the length field of the command packet
 		HAL_UART_Receive(C_UART,bl_rx_buffer,1,HAL_MAX_DELAY);
@@ -884,14 +887,210 @@ uint8_t execute_flash_erase(uint8_t sector_number, uint8_t number_of_sectors)
 //********************************************************
 void bootloader_handle_memwrite_cmd(uint8_t* bl_rx_buffer)
 {
+	uint8_t addr_valid = ADDR_VALID;
+	uint8_t write_status = 0x00;
+	uint8_t len = 0;
+	len = bl_rx_buffer[0];
+	uint8_t payload_len = bl_rx_buffer[6];
+	 
+	uint32_t mem_address =*((uint32_t *)(&bl_rx_buffer[2]));
 	
+	printmsg("BL_DEBUG_MSG: bootloader_handle_memwrite_cmd \r\n");
+	
+	// Total length of the command packet
+	uint32_t command_packet_len = bl_rx_buffer[0] + 1; // get the len value from the host message
+	
+	// Extract the CRC32 sent by the Host
+	uint32_t host_crc = *((uint32_t *) (bl_rx_buffer + command_packet_len -4)); // get the crc value that was sent by the host
+	
+	
+	//1. Verify the checksum	
+	 if(1)    // PROBLEM WITH THE CRC FROM THE SECOND PACKET!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! so i changed to if(1)
+	 //if(!bootloader_veryfy_crc(&bl_rx_buffer[0],command_packet_len-4,host_crc))
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum success\r\n");
+		 //checksum is correct..
+		 bootloader_send_ack(bl_rx_buffer[0],1);// send ack
+		   //if(1)
+			 if(verify_address(mem_address) == ADDR_VALID)
+			 {
+				 printmsg("BL_DEBUG_MSG: valid mem write address: %#x\r\n",mem_address);		
+				 
+				 HAL_GPIO_WritePin(LD2_GPIO_Port,LD2_Pin,1); // Toggle LED
+				 // execute mem write
+				 write_status = execute_mem_write(&bl_rx_buffer[7],mem_address,payload_len);
+				 
+				 HAL_GPIO_WritePin(LD2_GPIO_Port,LD2_Pin,0); // Toggle LED
+				 
+				 //inform host about the status
+				bootloader_uart_write_data(&write_status,1); //inform the host 
+			 }
+			 else
+			 {
+				 printmsg("BL_DEBUG_MSG: invalid mem write address: %#x\r\n",mem_address);
+				 write_status = ADDR_INVALID;
+				 
+				 // inform the host that address is invalid
+				 bootloader_uart_write_data(&write_status,sizeof(write_status)); //inform the host 
+				 
+			 }
+		 
+	 }
+	 else
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum fail !\r\n");
+		 // checksum is wrong, send nack
+		 bootloader_send_nack();// send nack
+	 }
 }	
+
+//Note1 Currently this functinon supports writeying to flash only
+//Note2 THis function does not check whether mem addres is a valid address
+
+uint8_t execute_mem_write(uint8_t *pBuffer, uint32_t mem_address, uint32_t len)
+{
+	uint8_t status = HAL_OK;
+	
+	HAL_FLASH_Unlock();
+	
+	for(uint32_t i=0;i<len;i++)
+	{
+		status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_BYTE,mem_address+i,pBuffer[i]);
+	}
+	
+	HAL_FLASH_Lock();
+	
+	return status;
+}
 //********************************************************
 //********************************************************
 void bootloader_handle_enrwprotect_cmd(uint8_t* bl_rx_buffer)
 {
+	uint8_t status = 0x00;
 	
+	printmsg("BL_DEBUG_MSG: bootloader_handle_enrwprotect_cmd \r\n");
+	
+	// Total length of the command packet
+	uint32_t command_packet_len = bl_rx_buffer[0] + 1; // get the len value from the host message
+	
+	// Extract the CRC32 sent by the Host
+	uint32_t host_crc = *((uint32_t *) (bl_rx_buffer + command_packet_len -4)); // get the crc value that was sent by the host
+	
+	
+	//1. Verify the checksum	
+	 if(!bootloader_veryfy_crc(&bl_rx_buffer[0],command_packet_len-4,host_crc))
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum success\r\n");
+		 bootloader_send_ack(bl_rx_buffer[0],sizeof(status));// send ack
+		 //checksum is correct..
+		 status = configure_flash_sector_rw_protection(bl_rx_buffer[2],bl_rx_buffer[3],0);
+		 
+		 printmsg("BL_DEBUG_MSG: flash erase status %#x\n",status);
+		 
+		 bootloader_uart_write_data(&status,sizeof(status)); //send data
+	 }
+	 else
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum fail !\r\n");
+		 // checksum is wrong, send nack
+		 bootloader_send_nack();// send nack
+	 }
 }	
+
+uint8_t configure_flash_sector_rw_protection(uint8_t sector_details,uint8_t protection_mode, uint8_t disable)
+{
+	//First configure_flash_sector_rw_protection the protection mocd
+	// protection_mode =1, means write protect of the user flash sector
+	// protection_mode =2, means read/write protect of the user flash sector
+	// According to RM of stm32f446xx TABLE9 , we have to modify the address
+	
+	volatile uint32_t *pOPTCR = (uint32_t*)0x40023C14;
+	
+	if(disable) // clearing all the sections
+	{
+		HAL_FLASH_OB_Unlock();
+		
+		//wait till no active operation on flash 
+		while(__HAL_FLASH_GET_FLAG(FLASH_FLAG_BSY) != RESET);
+		
+		// clear the 31st bit (default state)
+		//please refer: flash option control register (FLASH_OPTCR)
+		*pOPTCR &= ~(1<<31);
+		
+		// clear the protection : make all bits belonging to sectors
+		*pOPTCR |= (0xFF << 16);
+		
+	  //set the option start bit (OPTSTRT)in FLASH_OPTCR register
+		*pOPTCR |= (1 << 1);
+		
+		while(__HAL_FLASH_GET_FLAG(FLASH_FLAG_BSY) != RESET);
+		
+		HAL_FLASH_OB_Lock();
+		
+		return 0;
+	}		
+	
+	// Write protection
+	if(protection_mode == (uint8_t) 1) // 1 is write protection, 2 is read protection
+	{
+		//we are putting write protection on the sectors encoded in sector_details argument
+		HAL_FLASH_OB_Unlock();
+		
+		//wait till no active operation on flash 
+		while(__HAL_FLASH_GET_FLAG(FLASH_FLAG_BSY) != RESET);
+		
+		// clear the 31st bit (default state)
+		//please refer: flash option control register (FLASH_OPTCR)
+		*pOPTCR &= ~(1<<31); // the 31th bit of the OPTCR register 0- write protection, 1- read & write protection
+		
+		// clear the protection : make all bits belonging to sectors
+		*pOPTCR &= ~(sector_details << 16); // bit 16th of the OPTCR register
+		
+		//set the option start bit (OPTSTRT)in FLASH_OPTCR register
+		*pOPTCR |= (1 << 1);
+		
+		//wait till no active operation on flash 
+		while(__HAL_FLASH_GET_FLAG(FLASH_FLAG_BSY) != RESET);
+	
+		
+		HAL_FLASH_OB_Lock();
+		
+		return 0;
+		
+	}
+	else if(protection_mode == (uint8_t) 2) // 1 is write protection, 2 is read protection  // not reversable!!!!!!!!!!!!!
+	{
+				//we are putting write protection on the sectors encoded in sector_details argument
+	/*	HAL_FLASH_OB_Unlock();
+		
+		//wait till no active operation on flash 
+		while(__HAL_FLASH_GET_FLAG(FLASH_FLAG_BSY) != RESET);
+		
+		// clear the 31st bit (default state)
+		//please refer: flash option control register (FLASH_OPTCR)
+		*pOPTCR |= (1<<31); // the 31th bit of the OPTCR register 0- write protection, 1- read & write protection
+		
+		// clear the protection : make all bits belonging to sectors
+		*pOPTCR &= ~(0xFF <<16); // clear the register part before writing into it
+		*pOPTCR |= (sector_details << 16); // bit 16th of the OPTCR register
+		
+		*pOPTCR |= (1 << 1);
+		
+		//wait till no active operation on flash 
+		while(__HAL_FLASH_GET_FLAG(FLASH_FLAG_BSY) != RESET);
+	
+		
+		HAL_FLASH_OB_Lock();
+		
+		return 0;*/
+		
+		
+	}
+	
+	
+}
+
+
 //********************************************************
 //********************************************************
 void bootloader_handle_memread_cmd(uint8_t* bl_rx_buffer)
@@ -902,8 +1101,43 @@ void bootloader_handle_memread_cmd(uint8_t* bl_rx_buffer)
 //********************************************************
 void bootloader_handle_readsectorstatus_cmd(uint8_t* bl_rx_buffer)
 {
+	static uint8_t status_level[2];
 	
+	printmsg("BL_DEBUG_MSG: bootloader_handle_readsectorstatus_cmd \r\n");
+	
+	// Total length of the command packet
+	uint32_t command_packet_len = bl_rx_buffer[0] + 1; // get the len value from the host message
+	
+	// Extract the CRC32 sent by the Host
+	uint32_t host_crc = *((uint32_t *) (bl_rx_buffer + command_packet_len -4)); // get the crc value that was sent by the host
+	
+	
+	//1. Verify the checksum	
+	 if(!bootloader_veryfy_crc(&bl_rx_buffer[0],command_packet_len-4,host_crc))
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum success\r\n");
+		 //checksum is correct..
+		 get_sector_status(status_level);
+		 bootloader_send_ack(bl_rx_buffer[0],sizeof(status_level));// send ack
+		 bootloader_uart_write_data(status_level,sizeof(status_level)); //send data
+	 }
+	 else
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum fail !\r\n");
+		 // checksum is wrong, send nack
+		 bootloader_send_nack();// send nack
+	 }
 }	
+
+void get_sector_status(uint8_t *sector_level)
+{
+	volatile uint32_t *pOPTCR = (uint32_t*)0x40023C14;
+
+	*sector_level = (uint8_t)(*pOPTCR >> 16); //This one!!!
+	*(sector_level + 1) = (uint8_t)(*pOPTCR >> 24);
+
+}
+
 //********************************************************
 //********************************************************
 void bootloader_handle_otpread_cmd(uint8_t* bl_rx_buffer)
@@ -914,6 +1148,36 @@ void bootloader_handle_otpread_cmd(uint8_t* bl_rx_buffer)
 //********************************************************
 void bootloader_handle_disrwprotect_cmd(uint8_t* bl_rx_buffer)
 {
+	uint8_t status = 0x00;
+	
+	printmsg("BL_DEBUG_MSG: bootloader_handle_disrwprotect_cmd \r\n");
+	
+	// Total length of the command packet
+	uint32_t command_packet_len = bl_rx_buffer[0] + 1; // get the len value from the host message
+	
+	// Extract the CRC32 sent by the Host
+	uint32_t host_crc = *((uint32_t *) (bl_rx_buffer + command_packet_len -4)); // get the crc value that was sent by the host
+	
+	
+	//1. Verify the checksum	
+	 if(!bootloader_veryfy_crc(&bl_rx_buffer[0],command_packet_len-4,host_crc))
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum success\r\n");
+		 bootloader_send_ack(bl_rx_buffer[0],sizeof(status));// send ack
+		 //checksum is correct..
+		 status = configure_flash_sector_rw_protection(0,0,1); // same is the configure_flash_sector_rw_protection function, but only the third field is '1' and disable all the active protection
+		 
+		 printmsg("BL_DEBUG_MSG: flash erase status %#x\n",status);
+		 
+		 bootloader_uart_write_data(&status,sizeof(status)); //send data
+	 }
+	 else
+	 {
+		 printmsg("BL_DEBUG_MSG: checksum fail !\r\n");
+		 // checksum is wrong, send nack
+		 bootloader_send_nack();// send nack
+	 }
+	
 	
 }	
 //********************************************************
@@ -936,9 +1200,9 @@ void bootloader_handle_disrwprotect_cmd(uint8_t* bl_rx_buffer)
 	 if(!bootloader_veryfy_crc(&bl_rx_buffer[0],command_packet_len-4,host_crc))
 	 {
 		 printmsg("BL_DEBUG_MSG: checksum success\r\n");
+		 //bootloader_send_ack(bl_rx_buffer[0],sizeof(rdp_level));// send ack
 		 //checksum is correct..
 		 //rdp_level = get_flash_rdp_level();
-		 //bootloader_send_ack(bl_rx_buffer[0],sizeof(rdp_level));// send ack
 		 //bootloader_uart_write_data(&rdp_level,sizeof(rdp_level)); //send data
 	 }
 	 else

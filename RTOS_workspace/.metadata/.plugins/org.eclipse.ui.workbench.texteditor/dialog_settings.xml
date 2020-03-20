@@ -2,20 +2,20 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="false" key="isRegEx"/>
-		<item value="printmsgUART1" key="selection"/>
+		<item value="xTaskCreate" key="selection"/>
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="true" key="wrap"/>
 		<item value="false" key="wholeword"/>
 		<list key="findhistory">
+			<item value="xTaskCreate"/>
+			<item value="create"/>
 			<item value="printmsgUART1"/>
 			<item value="prvSetupUART1"/>
 			<item value="HAL_UART_MspInit"/>
 			<item value="MSP_INIT"/>
 			<item value="GPIOMode_TypeDef"/>
 			<item value="GPIO_PinAFConfig"/>
-			<item value="printmsg"/>
-			<item value="sprintf"/>
 		</list>
 		<list key="replacehistory">
 		</list>
