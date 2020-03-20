@@ -1,0 +1,42 @@
+# depslib dependency file v1.0
+1584718694 source:c:\users\user\workspace\codeblocksprojects\helloworld\main.c
+	"main.h"
+
+1527052776 source:c:\users\user\workspace\codeblocksprojects\helloworld\blcommands.c
+	"main.h"
+
+1527052776 c:\users\user\workspace\codeblocksprojects\helloworld\main.h
+	<Windows.h>
+	<stdio.h>
+	<string.h>
+	<stdint.h>
+	"WindowsSerialPort.h"
+	"LinuxSerialPort.h"
+	"OSxSerialPort.h"
+
+1527052776 c:\users\user\workspace\codeblocksprojects\helloworld\windowsserialport.h
+
+1527052776 c:\users\user\workspace\codeblocksprojects\helloworld\linuxserialport.h
+
+1527052776 c:\users\user\workspace\codeblocksprojects\helloworld\osxserialport.h
+
+1527052776 source:c:\users\user\workspace\codeblocksprojects\helloworld\blreplyprocessing.c
+	"main.h"
+
+1527052776 source:c:\users\user\workspace\codeblocksprojects\helloworld\fileops.c
+	"main.h"
+
+1527052776 source:c:\users\user\workspace\codeblocksprojects\helloworld\linuxserialport.c
+	"main.h"
+	"LinuxSerialPort.h"
+
+1527052776 source:c:\users\user\workspace\codeblocksprojects\helloworld\osxserialport.c
+	"main.h"
+	"OSxSerialPort.h"
+
+1527052776 source:c:\users\user\workspace\codeblocksprojects\helloworld\utilities.c
+	"main.h"
+
+1527052776 source:c:\users\user\workspace\codeblocksprojects\helloworld\windowsserialport.c
+	"main.h"
+

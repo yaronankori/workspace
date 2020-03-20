@@ -1,0 +1,42 @@
+# depslib dependency file v1.0
+1527052776 source:c:\users\user\workspace\codeblocksprojects\stm32_programmer_v1\blcommands.c
+	"main.h"
+
+1527052776 c:\users\user\workspace\codeblocksprojects\stm32_programmer_v1\main.h
+	<Windows.h>
+	<stdio.h>
+	<string.h>
+	<stdint.h>
+	"WindowsSerialPort.h"
+	"LinuxSerialPort.h"
+	"OSxSerialPort.h"
+
+1527052776 c:\users\user\workspace\codeblocksprojects\stm32_programmer_v1\windowsserialport.h
+
+1527052776 c:\users\user\workspace\codeblocksprojects\stm32_programmer_v1\linuxserialport.h
+
+1527052776 c:\users\user\workspace\codeblocksprojects\stm32_programmer_v1\osxserialport.h
+
+1527052776 source:c:\users\user\workspace\codeblocksprojects\stm32_programmer_v1\blreplyprocessing.c
+	"main.h"
+
+1527052776 source:c:\users\user\workspace\codeblocksprojects\stm32_programmer_v1\fileops.c
+	"main.h"
+
+1527052776 source:c:\users\user\workspace\codeblocksprojects\stm32_programmer_v1\linuxserialport.c
+	"main.h"
+	"LinuxSerialPort.h"
+
+1527052776 source:c:\users\user\workspace\codeblocksprojects\stm32_programmer_v1\main.c
+	"main.h"
+
+1527052776 source:c:\users\user\workspace\codeblocksprojects\stm32_programmer_v1\osxserialport.c
+	"main.h"
+	"OSxSerialPort.h"
+
+1527052776 source:c:\users\user\workspace\codeblocksprojects\stm32_programmer_v1\utilities.c
+	"main.h"
+
+1584719497 source:c:\users\user\workspace\codeblocksprojects\stm32_programmer_v1\windowsserialport.c
+	"main.h"
+
