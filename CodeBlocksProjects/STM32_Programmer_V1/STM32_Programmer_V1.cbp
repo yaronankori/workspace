@@ -32,7 +32,34 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="main.cpp" />
+		<Unit filename="BlCommands.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="BlReplyProcessing.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LinuxSerialPort.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LinuxSerialPort.h" />
+		<Unit filename="OSxSerialPort.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OSxSerialPort.h" />
+		<Unit filename="WindowsSerialPort.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="WindowsSerialPort.h" />
+		<Unit filename="fileops.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="main.h" />
+		<Unit filename="utilities.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<envvars />
